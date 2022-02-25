@@ -6,11 +6,20 @@ namespace DaDiPortal.IdentityServer;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
+        bool seed = args.Contains("/seed");
+        if (seed)
+            args = args
+                .Except(new[] { "/seed" })
+                .ToArray();
+
         var builder = WebApplication
             .CreateBuilder(args)
             .ConfigureServices();
+
+        if (seed)
+            await SeedData.EnsureSeedData(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder
             .Build()
