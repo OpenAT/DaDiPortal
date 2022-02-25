@@ -6,7 +6,7 @@ namespace DaDiPortal.IdentityServer;
 
 public static class Program
 {
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
     {
         bool seed = args.Contains("/seed");
         if (seed)
@@ -19,11 +19,10 @@ public static class Program
             .ConfigureServices();
 
         if (seed)
-            await SeedData.EnsureSeedData(builder.Configuration.GetConnectionString("DefaultConnection"));
+            SeedData.EnsureSeedData(builder.Configuration.GetConnectionString("DefaultConnection"));
 
-        var app = builder
-            .Build()
-            .ConfigureWebApp();
+        var app = builder.Build();
+        app.ConfigureWebApp();
 
         app.Run();
     }
@@ -53,13 +52,19 @@ public static class Program
             .AddOperationalStore(opt => opt.ConfigureDbContext = b => b.UseSqlServer(connStr, b1 => b1.MigrationsAssembly(assemblyName)))
             .AddDeveloperSigningCredential();
 
+        builder.Services
+            .AddControllersWithViews();
+
         return builder;
     }
 
     private static WebApplication ConfigureWebApp(this WebApplication webApp)
     {
-        webApp
-            .UseIdentityServer();
+        webApp.UseStaticFiles()
+            .UseRouting()
+            .UseIdentityServer()
+            .UseAuthorization()
+            .UseEndpoints(x => x.MapDefaultControllerRoute());
 
         return webApp;
     }

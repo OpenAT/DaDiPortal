@@ -11,7 +11,7 @@ namespace DaDiPortal.IdentityServer;
 
 public class SeedData
 {
-    public static async Task EnsureSeedData(string connectionString)
+    public static void EnsureSeedData(string connectionString)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -43,14 +43,14 @@ public class SeedData
         var ctx = scope.ServiceProvider.GetRequiredService<AspNetIdentityDbContext>();
         ctx.Database.Migrate();
         
-        await EnsureUsers(scope);
+        EnsureUsers(scope);
     }
 
-    private static async Task EnsureUsers(IServiceScope scope)
+    private static void EnsureUsers(IServiceScope scope)
     {
         var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-        var christian = await userMgr.FindByNameAsync("csp");
+        var christian = userMgr.FindByNameAsync("csp").Result;
 
         if (christian == null)
         {
@@ -61,17 +61,18 @@ public class SeedData
                 EmailConfirmed = true
             };
 
-            var result = await userMgr.CreateAsync(christian, "Pass123$");
+            var result = userMgr.CreateAsync(christian, "Pass123$").Result;
             if (!result.Succeeded)
                 throw new Exception(result.Errors.First().Description);
 
-            result = await userMgr
+            result = userMgr
                 .AddClaimsAsync(christian, new Claim[]
                 {
                     new Claim(JwtClaimTypes.Name, "Christian Spath"),
                     new Claim(JwtClaimTypes.GivenName, "Christian"),
                     new Claim(JwtClaimTypes.FamilyName, "Spath"),
-                });
+                })
+                .Result;
 
             if (!result.Succeeded)
                 throw new Exception(result.Errors.First().Description);
