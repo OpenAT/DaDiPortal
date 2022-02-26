@@ -12,11 +12,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{0AE086C3-E37
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{036FB030-D63C-4073-85B4-E399C3886DDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaDiPortal.IdentityServer", "src\DaDiPortal.IdentityServer\DaDiPortal.IdentityServer.csproj", "{CD9C3A53-8789-455F-84AB-B1212C3D10A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaDiPortal.IdentityServer", "src\DaDiPortal.IdentityServer\DaDiPortal.IdentityServer.csproj", "{CD9C3A53-8789-455F-84AB-B1212C3D10A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaDiPortal.API", "src\DaDiPortal.API\DaDiPortal.API.csproj", "{68FB16B5-3C18-4A65-B7CC-7AD33432FD02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaDiPortal.API", "src\DaDiPortal.API\DaDiPortal.API.csproj", "{68FB16B5-3C18-4A65-B7CC-7AD33432FD02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaDiPortal.API.DataAccess", "src\DaDiPortal.API.DataAccess\DaDiPortal.API.DataAccess.csproj", "{671CBA37-0FB3-4255-9EDA-0EC036F5B99D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaDiPortal.API.DataAccess", "src\DaDiPortal.API.DataAccess\DaDiPortal.API.DataAccess.csproj", "{671CBA37-0FB3-4255-9EDA-0EC036F5B99D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaDiPortal.Portal", "src\DaDiPortal.Portal\DaDiPortal.Portal.csproj", "{703E63BC-C292-4BDC-AE28-7B38F7C81F56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{671CBA37-0FB3-4255-9EDA-0EC036F5B99D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{671CBA37-0FB3-4255-9EDA-0EC036F5B99D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{671CBA37-0FB3-4255-9EDA-0EC036F5B99D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{703E63BC-C292-4BDC-AE28-7B38F7C81F56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{703E63BC-C292-4BDC-AE28-7B38F7C81F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{703E63BC-C292-4BDC-AE28-7B38F7C81F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{703E63BC-C292-4BDC-AE28-7B38F7C81F56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,6 +50,7 @@ Global
 		{CD9C3A53-8789-455F-84AB-B1212C3D10A1} = {DAE65439-6021-446D-BFF2-D3D1FC2EBFFB}
 		{68FB16B5-3C18-4A65-B7CC-7AD33432FD02} = {DAE65439-6021-446D-BFF2-D3D1FC2EBFFB}
 		{671CBA37-0FB3-4255-9EDA-0EC036F5B99D} = {DAE65439-6021-446D-BFF2-D3D1FC2EBFFB}
+		{703E63BC-C292-4BDC-AE28-7B38F7C81F56} = {DAE65439-6021-446D-BFF2-D3D1FC2EBFFB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D0A362C7-C40E-4157-B7EE-4690FB7E0231}

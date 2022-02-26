@@ -23,6 +23,14 @@ public static class Program
             .AddControllers();
 
         builder.Services
+            .AddAuthentication("Bearer")
+            .AddIdentityServerAuthentication("Bearer", opt =>
+            {
+                opt.Authority = "https://localhost:5443";
+                opt.ApiName = "DaDiPortalApi";
+            });
+
+        builder.Services
             .AddDataAccessLayer(builder.Configuration);
 
         return builder;
@@ -30,6 +38,8 @@ public static class Program
 
     private static WebApplication ConfigureWebApplication(this WebApplication webApp)
     {
+        webApp.UseAuthentication();
+        webApp.UseAuthorization();
         webApp.MapControllers();
 
         return webApp;

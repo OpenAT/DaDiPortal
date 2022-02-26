@@ -1,0 +1,15 @@
+﻿@page "/donations"
+
+<h3>Donations</h3>
+
+@if (MyDonations != null && MyDonations.Any())
+{
+    foreach (var donation in MyDonations)
+    {
+        <p>@donation.Date.ToShortDateString(), @donation.Amount.ToString("N2")</p>
+    }
+}
+else 
+{
+    <p>No donations available</p>
+}

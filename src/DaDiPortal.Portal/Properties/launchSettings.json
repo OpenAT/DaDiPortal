@@ -1,19 +1,18 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:30079",
-      "sslPort": 44344
+      "applicationUrl": "http://localhost:51501",
+      "sslPort": 44377
     }
   },
   "profiles": {
-    "DaDiPortal.IdentityServer": {
+    "DaDiPortal.Portal": {
       "commandName": "Project",
-      //"commandLineArgs": "/seed", //Use for first start only
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5443",
+      "applicationUrl": "https://localhost:5444;http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
