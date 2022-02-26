@@ -1,4 +1,6 @@
 using DaDiPortal.Portal.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,25 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.Configure<IdentityServerSettings>(builder.Configuration.GetSection("IdentityServerSettings"));
 builder.Services.AddSingleton<ITokenService, TokenService>();
+
+builder.Services
+    .AddAuthentication(o =>
+    {
+        o.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+    })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, o =>
+    {
+        o.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        o.SignOutScheme = OpenIdConnectDefaults.AuthenticationScheme;
+        o.Authority = builder.Configuration["InteractiveServiceSettings:AuthorityUrl"];
+        o.ClientId = builder.Configuration["InteractiveServiceSettings:ClientId"];
+        o.ClientSecret = builder.Configuration["InteractiveServiceSettings:ClientSecret"];
+        o.ResponseType = "code";
+        o.SaveTokens = true;
+        o.GetClaimsFromUserInfoEndpoint = true;
+    });
 
 var app = builder.Build();
 
