@@ -16,7 +16,7 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger _logger;
 
-        public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger, IConfiguration config)
+        public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger)
         {
             _interaction = interaction;
             _environment = environment;
@@ -27,8 +27,7 @@ namespace IdentityServerHost.Quickstart.UI
         {
             _logger.LogInformation($"Current environment: {_environment.EnvironmentName}");
 
-#warning Remove IsProduction condition before going live
-            if (_environment.IsDevelopment() || _environment.IsProduction())
+            if (_environment.IsDevelopment())
                 return View();
 
             _logger.LogInformation("Homepage is disabled in production. Returning 404.");
