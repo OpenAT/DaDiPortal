@@ -25,6 +25,8 @@ namespace IdentityServerHost.Quickstart.UI
 
         public IActionResult Index()
         {
+            _logger.LogInformation($"Current environment: {_environment.EnvironmentName}");
+
 #warning Remove IsProduction condition before going live
             if (_environment.IsDevelopment() || _environment.IsProduction())
                 return View();
