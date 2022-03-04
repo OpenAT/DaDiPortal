@@ -10,10 +10,18 @@
 		<PackageReference Include="IdentityModel" Version="6.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.2" />
+		<PackageReference Include="NLog" Version="4.7.14" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\DaDiPortal.API\DaDiPortal.API.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Content Update="appsettings.Production.json">
+		  <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+		</Content>
+		<Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+	</ItemGroup>
 </Project>
