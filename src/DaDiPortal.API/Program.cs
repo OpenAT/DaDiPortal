@@ -1,20 +1,40 @@
 using DaDiPortal.API.DataAccess;
+using NLog.Web;
 
 namespace DaDiPortal.API;
 
 public static class Program
 {
+    private static ILogger? _logger;
+
     public static void Main(string[] args)
     {
-        var builder = WebApplication
-            .CreateBuilder(args)
-            .ConfigureServices();
+        NLog.LogManager
+            .Setup()
+            .LoadConfigurationFromAppSettings();
 
-        var app = builder
-            .Build()
-            .ConfigureWebApplication();
+        try
+        {
+            var builder = WebApplication
+                .CreateBuilder(args)
+                .ConfigureServices();
 
-        app.Run();
+            var app = builder
+                .Build()
+                .ConfigureWebApplication();
+
+            _logger!.LogInformation("Configuration completed, running app");
+            app.Run();
+        }
+        catch (Exception exc)
+        {
+            _logger?.LogError(exc, "Unhandled exception");
+            throw;
+        }
+        finally
+        {
+            NLog.LogManager.Shutdown();
+        }
     }
 
     private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
@@ -33,11 +53,20 @@ public static class Program
         builder.Services
             .AddDataAccessLayer(builder.Configuration);
 
+        builder.Logging
+            .ClearProviders()
+            .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Debug);
+
+        builder.Host.UseNLog();
+        
         return builder;
     }
 
     private static WebApplication ConfigureWebApplication(this WebApplication webApp)
     {
+        _logger = webApp.Services
+            .GetRequiredService<ILogger<WebApplication>>();
+        
         webApp.UseAuthentication();
         webApp.UseAuthorization();
         webApp.MapControllers();
