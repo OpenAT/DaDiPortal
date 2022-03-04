@@ -46,8 +46,8 @@ public static class Program
             .AddAuthentication("Bearer")
             .AddIdentityServerAuthentication("Bearer", opt =>
             {
-                opt.Authority = "https://localhost:5443";
-                opt.ApiName = "DaDiPortalApi";
+                opt.Authority = builder.Configuration["IdentityServerSettings:Authority"];
+                opt.ApiName = builder.Configuration["IdentityServerSettings:ApiName"];
             });
 
         builder.Services
