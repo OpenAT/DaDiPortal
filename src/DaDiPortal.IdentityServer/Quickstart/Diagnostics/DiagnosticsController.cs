@@ -2,8 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,16 +12,26 @@ namespace IdentityServerHost.Quickstart.UI
     [Authorize]
     public class DiagnosticsController : Controller
     {
+        private readonly IWebHostEnvironment _environment;
+        private readonly ILogger _logger;
+
+        public DiagnosticsController(IWebHostEnvironment environment, ILogger<DiagnosticsController> logger)
+        {
+            _environment = environment;
+            _logger = logger;
+        }
+
         public async Task<IActionResult> Index()
         {
-            var localAddresses = new string[] { "127.0.0.1", "::1", HttpContext.Connection.LocalIpAddress.ToString() };
-            if (!localAddresses.Contains(HttpContext.Connection.RemoteIpAddress.ToString()))
+            _logger.LogInformation($"Environment: {_environment.EnvironmentName}");
+
+            if (_environment.IsDevelopment())
             {
-                return NotFound();
+                var model = new DiagnosticsViewModel(await HttpContext.AuthenticateAsync());
+                return View(model);
             }
 
-            var model = new DiagnosticsViewModel(await HttpContext.AuthenticateAsync());
-            return View(model);
+            return NotFound();
         }
     }
 }

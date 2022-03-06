@@ -1,30 +1,50 @@
 using DaDiPortal.IdentityServer.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NLog.Web;
 
 namespace DaDiPortal.IdentityServer;
 
 public static class Program
 {
+    private static ILogger? _logger;
+
     public static void Main(string[] args)
     {
-        bool seed = args.Contains("/seed");
-        if (seed)
-            args = args
-                .Except(new[] { "/seed" })
-                .ToArray();
+        NLog.LogManager
+            .Setup()
+            .LoadConfigurationFromAppSettings();
 
-        var builder = WebApplication
-            .CreateBuilder(args)
-            .ConfigureServices();
+        try
+        {
+            bool seed = args.Contains("/seed");
+            if (seed)
+                args = args
+                    .Except(new[] { "/seed" })
+                    .ToArray();
 
-        if (seed)
-            SeedData.EnsureSeedData(builder.Configuration.GetConnectionString("DefaultConnection"));
+            var webAppBuilder = WebApplication
+                .CreateBuilder(args)
+                .ConfigureServices();
 
-        var app = builder.Build();
-        app.ConfigureWebApp();
+            if (seed)
+                SeedData.EnsureSeedData(webAppBuilder.Configuration.GetConnectionString("DefaultConnection"));
 
-        app.Run();
+            var webApp = webAppBuilder.Build();
+
+            webApp
+                .ConfigureWebApp()
+                .Run();
+        }
+        catch (Exception exc)
+        {
+            _logger?.LogError(exc, "Unhandled exception");
+            throw;
+        }
+        finally
+        {
+            NLog.LogManager.Shutdown();
+        }
     }
 
     private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
@@ -55,12 +75,28 @@ public static class Program
         builder.Services
             .AddControllersWithViews();
 
+        builder.Logging
+            .ClearProviders()
+            .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Debug);
+
+        builder.Host.UseNLog();
+
         return builder;
     }
 
     private static WebApplication ConfigureWebApp(this WebApplication webApp)
     {
-        webApp.UseStaticFiles()
+        _logger = webApp.Services
+            .GetRequiredService<ILogger<WebApplication>>();
+
+        if (!webApp.Environment.IsDevelopment())
+            webApp
+                .UseExceptionHandler("/Error")
+                .UseHsts();
+
+        webApp
+            .UseHttpsRedirection()
+            .UseStaticFiles()
             .UseRouting()
             .UseIdentityServer()
             .UseAuthorization()
