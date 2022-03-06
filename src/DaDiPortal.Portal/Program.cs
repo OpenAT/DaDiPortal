@@ -1,3 +1,4 @@
+using DaDiPortal.Portal.Pages;
 using DaDiPortal.Portal.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -47,7 +48,8 @@ public static class Program
         builder.Services
             .AddHttpClient()
             .Configure<IdentityServerSettings>(builder.Configuration.GetSection("IdentityServerSettings"))
-            .AddSingleton<ITokenService, TokenService>();
+            .AddSingleton<ITokenService, TokenService>()
+            .AddSingleton<ILogWrapper, LogWrapper>();
 
         builder.Services
            .AddAuthentication(o =>
