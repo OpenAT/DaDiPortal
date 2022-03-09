@@ -16,7 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\src\DaDiPortal.IdentityServer\DaDiPortal.IdentityServer.csproj" />
+	  <ProjectReference Include="..\..\src\DaDiPortal.IdentityServer\DaDiPortal.IdentityServer.csproj" />
 	</ItemGroup>
 
 </Project>

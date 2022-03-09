@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "DbMigrationTool": {
+      "commandName": "Project"
+    },
+    "DbMigrationTool (Apply)": {
+      "commandName": "Project",
+      "commandLineArgs": "ApplyMigrations"
+    }
+  }
+}

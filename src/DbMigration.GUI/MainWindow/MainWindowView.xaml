@@ -1,0 +1,65 @@
+﻿<Window 
+    x:Class="DbMigration.GUI.MainWindow.MainWindowView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="clr-namespace:DbMigration.GUI.MainWindow"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    mc:Ignorable="d"
+    Height="800" 
+    Title="DaDiPortal DB Migration Tool" 
+    Width="1200"
+    WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0">
+            <TextBlock DockPanel.Dock="Top" Text="Databases"/>
+            <Border DockPanel.Dock="Top" BorderThickness="1" BorderBrush="Black">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding DatabaseServers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Header="{Binding Name}">
+                                    <DataGrid ItemsSource="{Binding Databases}" Margin="0,5,0,10" MaxHeight="350">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Data.Name}"/>
+                                            <DataGridTextColumn Header="Latest Applied Migration" Binding="{Binding Data.LatestAppliedMigration}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </DockPanel>
+
+        <DockPanel Grid.Column="2">
+            <TextBlock DockPanel.Dock="Top" Text="Contexts"/>
+            <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Contexts}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Latest Migration" Binding="{Binding LatestMigration}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <DockPanel Grid.Column="4">
+            <TextBlock DockPanel.Dock="Top" Text="Pending Migrations"/>
+            <Button DockPanel.Dock="Bottom" Content="Apply Migration" Margin="0,10,0,0" Background="#FF006CBE"/>
+            <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Contexts}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Grid>
+</Window>
