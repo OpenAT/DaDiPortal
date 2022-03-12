@@ -58,13 +58,13 @@ public class ApplyMigrationCmd : AsyncDelegateCommand<ContextVm>
         }
         catch (Exception exc)
         {
-            MessageBox.Show($"Unable to apply migrations for context '{contextVm.Data.ContextType.Name}':\n\n{exc.GetMessages()}");
+            MessageBox.Show($"Unable to apply migrations for context '{contextVm.Data.ContextType.Name}':\n\n{exc.GetMessages()}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
         if (result == ApplyMigrationResult.Success)
-            MessageBox.Show("Migration successfully applied");
+            MessageBox.Show("Migration successfully applied", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         else if (result == ApplyMigrationResult.UpToDate)
-            MessageBox.Show("Database already up to date");
+            MessageBox.Show("Database already up to date", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
