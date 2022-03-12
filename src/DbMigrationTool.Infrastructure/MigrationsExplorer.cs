@@ -68,6 +68,9 @@ public class MigrationsExplorer : IMigrationsExplorer
             })
             .ToArray();
 
+        if (!migrationTypes.Any())
+            return "NO MIGRATION FOUND";
+
         return migrationTypes
             .Select(x => x.GetCustomAttribute<MigrationAttribute>()!)
             .Select(x => x.Id)

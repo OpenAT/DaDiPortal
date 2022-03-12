@@ -1,4 +1,5 @@
 using DaDiPortal.IdentityServer.Data;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
@@ -49,18 +50,29 @@ public static class Program
 
     private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Services
-            .AddDbContext<AspNetIdentityDbContext>(o => o.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryAspNetIdentity"));
+        //APPLY INITIAL MIGRATIONS WITH FOLLOWING COMMANDS
+        //dotnet ef migrations add Operational_Initial --context PersistedGrantDbContext --output-dir Migrations/OperationalStore
+        //dotnet ef migrations add Configuration_Initial --context ConfigurationDbContext --output-dir Migrations/ConfigurationStore
+        //dotnet ef migrations add AspIdentity_Initial --context AspNetIdentityDbContext --output-dir Migrations/AspIdentityStore
 
         builder.Services
+            .AddDbContext<AspNetIdentityDbContext>(o => o.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableAspNetIdentity, DbConstants.SchemaAspNetIdentity))
             .AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<AspNetIdentityDbContext>();
 
         builder.Services
             .AddIdentityServer()
             .AddAspNetIdentity<IdentityUser>()
-            .AddConfigurationStore(opt => opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryConfigStore"))
-            .AddOperationalStore(opt => opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryOperationalStore"))
+            .AddConfigurationStore(opt =>
+            {
+                opt.DefaultSchema = "IdentityServer";
+                opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableConfigurationStore, DbConstants.SchemaIdentityServer);
+            })
+            .AddOperationalStore(opt =>
+            {
+                opt.DefaultSchema = "IdentityServer";
+                opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableOperationalStore, DbConstants.SchemaIdentityServer);
+            })
             .AddDeveloperSigningCredential();
 
         builder.Services
@@ -75,19 +87,19 @@ public static class Program
         return builder;
     }
 
-    private static DbContextOptionsBuilder ConfigureDbCtxOptions(this DbContextOptionsBuilder optBuilder, IConfiguration config, string migrationHistoryTableName)
+    private static DbContextOptionsBuilder ConfigureDbCtxOptions(this DbContextOptionsBuilder optBuilder, IConfiguration config, string historyTableName, string historyTableSchema)
     {
         var assemblyName = typeof(Program)
                     .Assembly
                     .GetName()
                     .Name;
-
+        
         string connStr = config
             .GetConnectionString("DefaultConnection");
 
         optBuilder.UseSqlServer(connStr, sqlOptBuilder => sqlOptBuilder
             .MigrationsAssembly(assemblyName)
-            .MigrationsHistoryTable(migrationHistoryTableName));
+            .MigrationsHistoryTable(historyTableName, historyTableSchema));
 
         return optBuilder;
     }

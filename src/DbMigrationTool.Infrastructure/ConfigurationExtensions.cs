@@ -1,4 +1,5 @@
-﻿using DaDiPortal.IdentityServer.Data;
+﻿using DaDiPortal.IdentityServer;
+using DaDiPortal.IdentityServer.Data;
 using DbMigrationTool.Application.Infrastructure;
 using DbMigrationTool.Application.Services;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -17,8 +18,8 @@ public static class ConfigurationExtensions
             .AddScoped<IDatabaseExplorer, DatabaseExplorer>()
             .AddScoped<IMigrationsExplorer, MigrationsExplorer>()
             .AddScoped<IMigrationApplier, MigrationApplier>()
-            .AddSingleton<OperationalStoreOptions>()
-            .AddSingleton<ConfigurationStoreOptions>()
+            .AddSingleton<OperationalStoreOptions>(new OperationalStoreOptions() { DefaultSchema = DbConstants.SchemaIdentityServer })
+            .AddSingleton<ConfigurationStoreOptions>(new ConfigurationStoreOptions() { DefaultSchema = DbConstants.SchemaIdentityServer })
             .AddDbContext<PersistedGrantDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient)
             .AddDbContext<ConfigurationDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient)
             .AddDbContext<AspNetIdentityDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient);
@@ -36,8 +37,29 @@ public static class ConfigurationExtensions
         var connStrProvider = serviceProvider
             .GetRequiredService<IConnectionStringProvider>();
 
+        string historyTableName;
+        string historyTableSchema;
+
+        if (dbContextOptionsBuilder.Options.ContextType == typeof(PersistedGrantDbContext))
+        {
+            historyTableName = DbConstants.HistoryTableOperationalStore;
+            historyTableSchema = DbConstants.SchemaIdentityServer;
+        }
+        else if (dbContextOptionsBuilder.Options.ContextType == typeof(ConfigurationDbContext))
+        {
+            historyTableName = DbConstants.HistoryTableConfigurationStore;
+            historyTableSchema = DbConstants.SchemaIdentityServer;
+        }
+        else if (dbContextOptionsBuilder.Options.ContextType == typeof(AspNetIdentityDbContext))
+        {
+            historyTableName = DbConstants.HistoryTableAspNetIdentity;
+            historyTableSchema = DbConstants.SchemaAspNetIdentity;
+        }
+        else
+            throw new Exception();
+
         dbContextOptionsBuilder.UseSqlServer(
             connStrProvider.GetConnectionString(), 
-            b => b.MigrationsAssembly(identityServerAssemblyName));
+            b => b.MigrationsAssembly(identityServerAssemblyName).MigrationsHistoryTable(historyTableName, historyTableSchema));
     }
 }

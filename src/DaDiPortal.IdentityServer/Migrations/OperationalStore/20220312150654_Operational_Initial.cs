@@ -3,14 +3,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DaDiPortal.IdentityServer.Migrations
+namespace DaDiPortal.IdentityServer.Migrations.OperationalStore
 {
-    public partial class InitialIdentityServerMigration : Migration
+    public partial class Operational_Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "IdentityServer");
+
             migrationBuilder.CreateTable(
                 name: "DeviceCodes",
+                schema: "IdentityServer",
                 columns: table => new
                 {
                     UserCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -30,6 +34,7 @@ namespace DaDiPortal.IdentityServer.Migrations
 
             migrationBuilder.CreateTable(
                 name: "PersistedGrants",
+                schema: "IdentityServer",
                 columns: table => new
                 {
                     Key = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -50,27 +55,32 @@ namespace DaDiPortal.IdentityServer.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
+                schema: "IdentityServer",
                 table: "DeviceCodes",
                 column: "DeviceCode",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_Expiration",
+                schema: "IdentityServer",
                 table: "DeviceCodes",
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_Expiration",
+                schema: "IdentityServer",
                 table: "PersistedGrants",
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_SubjectId_ClientId_Type",
+                schema: "IdentityServer",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "ClientId", "Type" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_SubjectId_SessionId_Type",
+                schema: "IdentityServer",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "SessionId", "Type" });
         }
@@ -78,10 +88,12 @@ namespace DaDiPortal.IdentityServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DeviceCodes");
+                name: "DeviceCodes",
+                schema: "IdentityServer");
 
             migrationBuilder.DropTable(
-                name: "PersistedGrants");
+                name: "PersistedGrants",
+                schema: "IdentityServer");
         }
     }
 }
