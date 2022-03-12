@@ -49,10 +49,6 @@ public static class Program
 
     private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
     {
-        string connStr = builder
-            .Configuration
-            .GetConnectionString("DefaultConnection");
-
         builder.Services
             .AddDbContext<AspNetIdentityDbContext>(o => o.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryAspNetIdentity"));
 
