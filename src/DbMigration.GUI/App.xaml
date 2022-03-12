@@ -23,8 +23,11 @@
             <Setter Property="CanUserReorderColumns" Value="False"/>
             <Setter Property="CanUserResizeRows" Value="False"/>
             <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="FontFamily" Value="Calibri"/>
             <Setter Property="FontSize" Value="18"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
         </Style>
 
         <Style TargetType="ListBox">

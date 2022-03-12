@@ -6,16 +6,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     mc:Ignorable="d"
-    Height="800" 
+    d:DataContext="{d:DesignInstance {x:Type l:MainWindowVm}}"
     Title="DaDiPortal DB Migration Tool" 
-    Width="1200"
-    WindowStartupLocation="CenterScreen">
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized">
     
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -28,12 +26,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Expander Header="{Binding Name}">
-                                    <DataGrid ItemsSource="{Binding Databases}" Margin="0,5,0,10" MaxHeight="350">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Data.Name}"/>
-                                            <DataGridTextColumn Header="Latest Applied Migration" Binding="{Binding Data.LatestAppliedMigration}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                    <ListBox ItemsSource="{Binding Databases}" SelectedItem="{Binding SelectedDatabase}" DisplayMemberPath="Data.Name" Margin="0,5,0,10" MaxHeight="350" BorderThickness="0"/>
                                 </Expander>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -46,18 +39,9 @@
             <TextBlock DockPanel.Dock="Top" Text="Contexts"/>
             <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Contexts}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Latest Migration" Binding="{Binding LatestMigration}" Width="*"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </DockPanel>
-
-        <DockPanel Grid.Column="4">
-            <TextBlock DockPanel.Dock="Top" Text="Pending Migrations"/>
-            <Button DockPanel.Dock="Bottom" Content="Apply Migration" Margin="0,10,0,0" Background="#FF006CBE"/>
-            <DataGrid DockPanel.Dock="Top" ItemsSource="{Binding Contexts}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Data.Name}"/>
+                    <DataGridTextColumn Header="Latest Available Migration" Binding="{Binding Data.LatestMigration}" Width="*"/>
+                    <DataGridTextColumn Header="Latest Applied Migration" Binding="{Binding Data.LatestAppliedMigration}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>

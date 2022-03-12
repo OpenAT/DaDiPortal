@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 
 namespace DbMigration.GUI.MainWindow
 {
@@ -9,8 +10,11 @@ namespace DbMigration.GUI.MainWindow
             InitializeComponent();
             DataContext = viewModel;
 
-            Loaded += async (s, e) => 
-                await viewModel.LoadedAsync();
+            Loaded += async (s, e) =>
+            {
+                if (!DesignerProperties.GetIsInDesignMode(this))
+                    await viewModel.LoadedAsync();
+            };
         }
     }
 }

@@ -11,6 +11,7 @@ public static class ConfigurationExtensions
     {
         return services
             .Configure<DatabaseServersSettings>(config.GetSection("DatabaseServersSettings"))
-            .AddScoped<IAppService, AppService>();
+            .AddScoped<IAppService, AppService>()
+            .AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
     }
 }

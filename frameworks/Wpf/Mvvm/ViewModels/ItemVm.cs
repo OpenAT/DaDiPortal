@@ -1,6 +1,6 @@
 ﻿namespace Wpf.Mvvm.ViewModels;
 
-public abstract class ListItemVm<T> : ViewModel
+public abstract class ItemVm<T> : ViewModel
 {
     #region fields
 
@@ -10,7 +10,7 @@ public abstract class ListItemVm<T> : ViewModel
 
     #region ctors
 
-    protected ListItemVm(T data)
+    protected ItemVm(T data)
     {
         Data = data;
     }

@@ -1,4 +1,9 @@
-﻿using DbMigrationTool.Application.Infrastructure;
+﻿using DaDiPortal.IdentityServer.Data;
+using DbMigrationTool.Application.Infrastructure;
+using DbMigrationTool.Application.Services;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +13,30 @@ public static class ConfigurationExtensions
 {
     public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, IConfiguration config)
     {
-        return services
-            .AddScoped<IDatabaseExplorer, DatabaseExplorer>();
+        services
+            .AddScoped<IDatabaseExplorer, DatabaseExplorer>()
+            .AddScoped<IMigrationsExplorer, MigrationsExplorer>()
+            .AddSingleton<OperationalStoreOptions>()
+            .AddSingleton<ConfigurationStoreOptions>()
+            .AddDbContext<PersistedGrantDbContext>(ConfigureDbContext, ServiceLifetime.Transient)
+            .AddDbContext<ConfigurationDbContext>(ConfigureDbContext, ServiceLifetime.Transient)
+            .AddDbContext<AspNetIdentityDbContext>(ConfigureDbContext, ServiceLifetime.Transient);
+
+        return services;
+    }
+
+    private static void ConfigureDbContext(IServiceProvider serviceProvider, DbContextOptionsBuilder dbContextOptionsBuilder)
+    {
+        string identityServerAssemblyName = typeof(DaDiPortal.IdentityServer.Program)
+            .Assembly
+            .GetName()!
+            .Name!;
+
+        var connStrProvider = serviceProvider
+            .GetRequiredService<IConnectionStringProvider>();
+
+        dbContextOptionsBuilder.UseSqlServer(
+            connStrProvider.GetConnectionString(), 
+            b => b.MigrationsAssembly(identityServerAssemblyName));
     }
 }

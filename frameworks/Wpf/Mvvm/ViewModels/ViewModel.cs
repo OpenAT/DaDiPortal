@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Wpf.Mvvm.ViewModels
 {
@@ -23,6 +24,16 @@ namespace Wpf.Mvvm.ViewModels
 
         protected void RaiseChanged([CallerMemberName] string prop = "")
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        protected void ShowBusyCursor()
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+        }
+
+        protected void ShowDefaultCursor()
+        {
+            Mouse.OverrideCursor = null;
+        }
 
         #endregion
     }

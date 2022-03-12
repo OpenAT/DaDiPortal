@@ -30,7 +30,7 @@ public static class Program
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        string assemblyName = typeof(Program)
+        string assemblyName = typeof(DaDiPortal.IdentityServer.Program)
             .Assembly
             .GetName()!
             .Name!;

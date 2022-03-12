@@ -3,9 +3,9 @@ using Wpf.Mvvm.ViewModels;
 
 namespace DbMigration.GUI.MainWindow;
 
-public class DatabaseVm : ItemVm<DatabaseDto>
+public class ContextVm : ItemVm<ContextDto>
 {
-    public DatabaseVm(DatabaseDto data) : base(data)
+    public ContextVm(ContextDto data) : base(data)
     {
     }
 }

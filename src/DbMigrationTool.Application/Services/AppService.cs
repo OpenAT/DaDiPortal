@@ -8,17 +8,28 @@ namespace DbMigrationTool.Application.Services
     public interface IAppService
     {
         Task<IEnumerable<DatabaseServerDto>> GetDatabases();
+        Task<IEnumerable<ContextDto>> GetContexts();
     }
 
     internal class AppService : IAppService
     {
         private readonly IDatabaseExplorer _dbExplorer;
+        private readonly IMigrationsExplorer _contextExplorer;
         private readonly DatabaseServersSettings _dbServerSettings;
 
-        public AppService(IDatabaseExplorer dbExplorer, IOptions<DatabaseServersSettings> dbServerSettings)
+        public AppService(
+            IDatabaseExplorer dbExplorer, 
+            IMigrationsExplorer contextExporer,
+            IOptions<DatabaseServersSettings> dbServerSettings)
         {
             _dbExplorer = dbExplorer;
+            _contextExplorer = contextExporer;
             _dbServerSettings = dbServerSettings.Value;
+        }
+
+        public async Task<IEnumerable<ContextDto>> GetContexts()
+        {
+            return await _contextExplorer.GetContextsWithLatestMigrations();
         }
 
         public async Task<IEnumerable<DatabaseServerDto>> GetDatabases()

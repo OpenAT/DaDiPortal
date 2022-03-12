@@ -14,6 +14,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\frameworks\Extensions\Extensions.csproj" />
+	  <ProjectReference Include="..\DaDiPortal.IdentityServer\DaDiPortal.IdentityServer.csproj" />
 	  <ProjectReference Include="..\DbMigrationTool.Application\DbMigrationTool.Application.csproj" />
 	</ItemGroup>
 

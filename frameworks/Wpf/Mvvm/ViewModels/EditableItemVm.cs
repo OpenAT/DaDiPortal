@@ -9,7 +9,7 @@ using Wpf.Mvvm.Commands;
 
 namespace Wpf.Mvvm.ViewModels
 {
-    public abstract class EditableListItemVm<T> : ListItemVm<T>, INotifyDataErrorInfo
+    public abstract class EditableItemVm<T> : ItemVm<T>, INotifyDataErrorInfo
     {
         #region fields
 
@@ -21,7 +21,7 @@ namespace Wpf.Mvvm.ViewModels
 
         #region ctors
 
-        protected EditableListItemVm(ILogger<EditableListItemVm<T>> logger, T data) : base(data)
+        protected EditableItemVm(ILogger<EditableItemVm<T>> logger, T data) : base(data)
         {
             _foundErrors = new Dictionary<string, List<string>>();
             _backup = new Dictionary<string, object>();
