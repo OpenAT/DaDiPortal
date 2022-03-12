@@ -49,17 +49,12 @@ public static class Program
 
     private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
     {
-        var assemblyName = typeof(Program)
-            .Assembly
-            .GetName()
-            .Name;
-        
         string connStr = builder
             .Configuration
             .GetConnectionString("DefaultConnection");
 
         builder.Services
-            .AddDbContext<AspNetIdentityDbContext>(o => o.UseSqlServer(connStr, b => b.MigrationsAssembly(assemblyName)));
+            .AddDbContext<AspNetIdentityDbContext>(o => o.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryAspNetIdentity"));
 
         builder.Services
             .AddIdentity<IdentityUser, IdentityRole>()
@@ -68,8 +63,8 @@ public static class Program
         builder.Services
             .AddIdentityServer()
             .AddAspNetIdentity<IdentityUser>()
-            .AddConfigurationStore(opt => opt.ConfigureDbContext = b => b.UseSqlServer(connStr, b1 => b1.MigrationsAssembly(assemblyName)))
-            .AddOperationalStore(opt => opt.ConfigureDbContext = b => b.UseSqlServer(connStr, b1 => b1.MigrationsAssembly(assemblyName)))
+            .AddConfigurationStore(opt => opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryConfigStore"))
+            .AddOperationalStore(opt => opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, "__MigrationHistoryOperationalStore"))
             .AddDeveloperSigningCredential();
 
         builder.Services
@@ -82,6 +77,23 @@ public static class Program
         builder.Host.UseNLog();
 
         return builder;
+    }
+
+    private static DbContextOptionsBuilder ConfigureDbCtxOptions(this DbContextOptionsBuilder optBuilder, IConfiguration config, string migrationHistoryTableName)
+    {
+        var assemblyName = typeof(Program)
+                    .Assembly
+                    .GetName()
+                    .Name;
+
+        string connStr = config
+            .GetConnectionString("DefaultConnection");
+
+        optBuilder.UseSqlServer(connStr, sqlOptBuilder => sqlOptBuilder
+            .MigrationsAssembly(assemblyName)
+            .MigrationsHistoryTable(migrationHistoryTableName));
+
+        return optBuilder;
     }
 
     private static WebApplication ConfigureWebApp(this WebApplication webApp)
