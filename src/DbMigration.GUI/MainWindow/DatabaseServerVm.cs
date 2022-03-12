@@ -1,29 +1,30 @@
-﻿using DbMigrationTool.Application.DTOs;
+﻿using DbMigrationTool.Application.Services;
+using Extensions;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using Wpf.Mvvm.ViewModels;
 
 namespace DbMigration.GUI.MainWindow;
 
-public class DatabaseServerVm : ViewModel
+public class DatabaseServerVm : ItemVm<string>
 {
     #region fields
 
     private bool _isExpanded;
     private DatabaseVm? _selectedDatabase;
+    private readonly IAppService _appService;
 
     #endregion
 
     #region ctors
 
-    public DatabaseServerVm(DatabaseServerDto dto)
+    public DatabaseServerVm(string name, IAppService appService) : base(name)
     {
-        Name = dto.Name;
-        Databases = dto
-            .Databases
-            .Select(x => new DatabaseVm(x))
-            .ToArray();
+        _appService = appService;
+        Databases = new ObservableCollection<DatabaseVm>();
     }
 
     #endregion
@@ -36,9 +37,7 @@ public class DatabaseServerVm : ViewModel
 
     #region props 
 
-    public string Name { get; }
-
-    public IEnumerable<DatabaseVm> Databases { get; }
+    public ObservableCollection<DatabaseVm> Databases { get; }
 
     public DatabaseVm? SelectedDatabase
     {
@@ -61,6 +60,35 @@ public class DatabaseServerVm : ViewModel
         { 
             _isExpanded = value;
             RaiseChanged();
+        }
+    }
+
+    #endregion
+
+    #region methods
+
+    protected override async Task OnSelected()
+    {
+        if (Databases.Any())
+            return;
+
+
+        ShowBusyCursor();
+
+        try
+        {
+            var databases = await _appService.GetDatabases(Data);
+
+            foreach (var database in databases)
+                Databases.Add(new DatabaseVm(database, Data));
+        }
+        catch (Exception exc)
+        {
+            MessageBox.Show($"Unable to get databases from server '{Data}': {exc.GetMessages()}");
+        }
+        finally
+        {
+            ShowDefaultCursor();
         }
     }
 

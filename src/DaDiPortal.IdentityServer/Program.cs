@@ -53,7 +53,7 @@ public static class Program
             .Assembly
             .GetName()
             .Name;
-
+        
         string connStr = builder
             .Configuration
             .GetConnectionString("DefaultConnection");

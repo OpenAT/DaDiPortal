@@ -1,4 +1,5 @@
-﻿using DbMigrationTool.Application.Services;
+﻿using DbMigration.GUI.Context;
+using DbMigrationTool.Application.Services;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Wpf.Mvvm.ViewModels;
@@ -10,21 +11,18 @@ public class MainWindowVm : ViewModel
     #region fields
 
     private readonly IAppService _appService;
-    private readonly IConnectionStringProvider _connectionStringProvider;
+    private DatabaseVm? _selectedDatabase;
 
     #endregion
 
     #region ctors
 
-    public MainWindowVm(
-        IAppService appService, 
-        IConnectionStringProvider connectionStringProvider)
+    public MainWindowVm(IAppService appService, ContextViewVm contextViewVm)
     {
         DatabaseServers = new ObservableCollection<DatabaseServerVm>();
-        Contexts = new ObservableCollection<ContextVm>();
 
         _appService = appService;
-        _connectionStringProvider = connectionStringProvider;
+        ContextViewVm = contextViewVm;
     }
 
     #endregion
@@ -32,7 +30,22 @@ public class MainWindowVm : ViewModel
     #region props
 
     public ObservableCollection<DatabaseServerVm> DatabaseServers { get; }
-    public ObservableCollection<ContextVm> Contexts { get; }
+
+    public ContextViewVm ContextViewVm { get; }
+
+    public DatabaseVm? SelectedDatabase
+    {
+        get { return _selectedDatabase; }
+        set 
+        { 
+            _selectedDatabase = value;
+            RaiseChanged();
+
+            if (_selectedDatabase != null)
+                _ = ContextViewVm.DatabaseSelected(_selectedDatabase.Server, _selectedDatabase.Data);
+        }
+    }
+
 
     #endregion
 
@@ -41,39 +54,13 @@ public class MainWindowVm : ViewModel
     public override async Task LoadedAsync()
     {
         ShowBusyCursor();
-        var databaseServers = await _appService.GetDatabases();
+        var databaseServers = await _appService.GetServers();
         ShowDefaultCursor();
 
         foreach (var databaseServer in databaseServers)
         {
-            var databaseServerVm = new DatabaseServerVm(databaseServer);
-            databaseServerVm.DatabaseSelected += OnDatabaseSelected;
-
+            var databaseServerVm = new DatabaseServerVm(databaseServer, _appService);
             DatabaseServers.Add(databaseServerVm);
-        }
-    }
-
-    #endregion
-
-    #region event handlers
-
-    private async void OnDatabaseSelected(DatabaseServerVm databaseServerVm)
-    {
-        foreach (var dbServer in DatabaseServers)
-            if (dbServer != databaseServerVm)
-                dbServer.SelectedDatabase = null;
-
-        _connectionStringProvider.SetConnection(databaseServerVm.Name, databaseServerVm.SelectedDatabase!.Data.Name);
-
-        ShowBusyCursor();
-        var contexts = await _appService.GetContexts();
-        ShowDefaultCursor();
-
-        Contexts.Clear();
-        foreach (var context in contexts)
-        {
-            var contextVm = new ContextVm(context);
-            Contexts.Add(contextVm);
         }
     }
 

@@ -3,9 +3,12 @@ using Wpf.Mvvm.ViewModels;
 
 namespace DbMigration.GUI.MainWindow;
 
-public class DatabaseVm : ItemVm<DatabaseDto>
+public class DatabaseVm : ItemVm<string>
 {
-    public DatabaseVm(DatabaseDto data) : base(data)
+    public DatabaseVm(string databaseName, string server) : base(databaseName)
     {
+        Server = server;
     }
+
+    public string Server { get; }
 }

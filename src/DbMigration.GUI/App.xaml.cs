@@ -1,4 +1,5 @@
-﻿using DbMigration.GUI.MainWindow;
+﻿using DbMigration.GUI.Context;
+using DbMigration.GUI.MainWindow;
 using DbMigrationTool.Application;
 using DbMigrationTool.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,8 @@ namespace DbMigration.GUI
             services
                 .AddSingleton<MainWindowView>()
                 .AddSingleton<MainWindowVm>()
+                .AddSingleton<ContextViewVm>()
+                .AddSingleton<ApplyMigrationCmd>()
                 .AddApplicationLayer(builderCtx.Configuration)
                 .AddInfrastructureLayer(builderCtx.Configuration);
         }

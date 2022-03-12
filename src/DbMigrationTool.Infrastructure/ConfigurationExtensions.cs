@@ -16,11 +16,12 @@ public static class ConfigurationExtensions
         services
             .AddScoped<IDatabaseExplorer, DatabaseExplorer>()
             .AddScoped<IMigrationsExplorer, MigrationsExplorer>()
+            .AddScoped<IMigrationApplier, MigrationApplier>()
             .AddSingleton<OperationalStoreOptions>()
             .AddSingleton<ConfigurationStoreOptions>()
-            .AddDbContext<PersistedGrantDbContext>(ConfigureDbContext, ServiceLifetime.Transient)
-            .AddDbContext<ConfigurationDbContext>(ConfigureDbContext, ServiceLifetime.Transient)
-            .AddDbContext<AspNetIdentityDbContext>(ConfigureDbContext, ServiceLifetime.Transient);
+            .AddDbContext<PersistedGrantDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient)
+            .AddDbContext<ConfigurationDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient)
+            .AddDbContext<AspNetIdentityDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient);
 
         return services;
     }

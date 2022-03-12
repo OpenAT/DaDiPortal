@@ -1,28 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Wpf.Mvvm.Commands
 {
-    public sealed class AsyncDelegateCommand<T> : DelegateCommand, IAsyncDelegateCommand<T>
+    public abstract class AsyncDelegateCommand<T> : DelegateCommand, IAsyncDelegateCommand<T>
     {
         #region Fields
 
         private bool _isRunning;
-        private readonly Func<T, Task> _task;
-        private readonly Func<T, bool> _canExecute;
 
         #endregion
 
         #region ctors
 
-        public AsyncDelegateCommand(Func<T, Task> execute, ILogger logger) : this(execute, null, logger) { }
-
-        public AsyncDelegateCommand(Func<T, Task> task, Func<T, bool> canExecute, ILogger logger) : base(logger)
-        {
-            _task = task ?? throw new ArgumentException(nameof(task));
-            _canExecute = canExecute;
-        }
+        public AsyncDelegateCommand(ILogger logger) : base(logger) { }
 
         #endregion
 
@@ -36,7 +29,7 @@ namespace Wpf.Mvvm.Commands
         #region methods
 
         public override sealed bool CanExecute(object parameter) =>
-            _canExecute?.Invoke((T)parameter) ?? true;
+            CanExecuteCore((T)parameter);
 
         public async override sealed void Execute(object parameter)
         {
@@ -52,7 +45,8 @@ namespace Wpf.Mvvm.Commands
 
             try
             {
-                await _task((T)parameter);
+                Mouse.OverrideCursor = Cursors.Wait;
+                await ExecuteCore((T)parameter);
             }
             catch (Exception exc)
             {
@@ -61,10 +55,15 @@ namespace Wpf.Mvvm.Commands
             }
             finally
             {
+                Mouse.OverrideCursor = null;
                 _isRunning = false;
                 ExecutionCompleted?.Invoke();
             }
         }
+
+        protected virtual bool CanExecuteCore(T parameter) => true;
+
+        protected abstract Task ExecuteCore(T parameter);
 
         #endregion
     }
