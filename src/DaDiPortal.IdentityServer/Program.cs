@@ -16,20 +16,11 @@ public static class Program
             .Setup()
             .LoadConfigurationFromAppSettings();
 
-        try
-        {
-            bool seed = args.Contains("/seed");
-            if (seed)
-                args = args
-                    .Except(new[] { "/seed" })
-                    .ToArray();
-
+        try 
+        { 
             var webAppBuilder = WebApplication
                 .CreateBuilder(args)
                 .ConfigureServices();
-
-            if (seed)
-                SeedData.EnsureSeedData(webAppBuilder.Configuration.GetConnectionString("DefaultConnection"));
 
             var webApp = webAppBuilder.Build();
 
