@@ -72,5 +72,6 @@ public class ApplyMigrationCmd : AsyncDelegateCommand<ContextVm>
             MessageBox.Show($"Unable to seed data for Aso user store", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
         contextVm.LatestAppliedMigration = await _contextService.GetLatestAppliedMigration(contextVm.Data);
+        Recheck();
     }
 }

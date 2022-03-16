@@ -30,7 +30,7 @@ namespace Wpf.Mvvm.Commands
 
         public abstract void Execute(object parameter);
 
-        public void CheckConditions()
+        public void Recheck()
         {
             if (CanExecuteChanged != null)
                 CanExecuteChanged?.Invoke(this, EventArgs.Empty);

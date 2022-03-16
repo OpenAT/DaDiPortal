@@ -1,6 +1,7 @@
 ﻿using DbMigration.GUI.MainWindow;
 using DbMigrationTool.Application.Services;
 using Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -15,16 +16,18 @@ public class ContextViewVm : ViewModel
     #region fields
 
     private readonly IContextService _contextService;
+    private readonly ILogger _logger;
 
     #endregion
 
     #region ctors
 
-    public ContextViewVm(IContextService contextService, ApplyMigrationCmd applyMigrationCmd)
+    public ContextViewVm(IContextService contextService, ApplyMigrationCmd applyMigrationCmd, ILogger<ContextViewVm> logger)
     {
         _contextService = contextService;
-        ApplyMigrationCmd = applyMigrationCmd; 
+        ApplyMigrationCmd = applyMigrationCmd;
         Contexts = new ObservableCollection<ContextVm>();
+        _logger = logger;
     }
 
     #endregion
@@ -58,6 +61,8 @@ public class ContextViewVm : ViewModel
 
     public async Task DatabaseSelected(string server, string database)
     {
+        _logger.LogInformation($"Database selected: {server}/{database}");
+
         ShowBusyCursor();
         _contextService.SetConnection(server, database);
 
@@ -72,7 +77,7 @@ public class ContextViewVm : ViewModel
         }
 
         ShowDefaultCursor();
-        ApplyMigrationCmd.CheckConditions();
+        ApplyMigrationCmd.Recheck();
     }
 
     #endregion

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace DbMigrationTool.Infrastructure;
@@ -13,14 +14,18 @@ namespace DbMigrationTool.Infrastructure;
 public class MigrationsExplorer : IMigrationsExplorer
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
 
-    public MigrationsExplorer(IServiceProvider serviceProvider)
+    public MigrationsExplorer(IServiceProvider serviceProvider, ILogger<MigrationsExplorer> logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public Task<IEnumerable<ContextDto>> GetContextsWithLatestMigrations()
     {
+        _logger.LogInformation("Loading contexts with latest migrations");
+
         return Task.Run<IEnumerable<ContextDto>>(() =>
         {
             var contextTypes = new Type[]
@@ -80,6 +85,8 @@ public class MigrationsExplorer : IMigrationsExplorer
 
     public async Task<string?> GetLatestAppliedMigration(Type contextType)
     {
+        _logger.LogInformation($"Getting latest applied migration for context {contextType.Name}");
+
         var ctx = (DbContext)_serviceProvider
             .GetRequiredService(contextType);
 

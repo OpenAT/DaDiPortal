@@ -5,7 +5,7 @@ namespace Wpf.Mvvm.Commands
 {
     public interface IDelegateCommand : ICommand
     {
-        void CheckConditions();
+        void Recheck();
     }
 
     public interface ISyncDelegateCommand : IDelegateCommand

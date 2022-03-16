@@ -5,6 +5,8 @@ using DbMigrationTool.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using System;
 using System.Windows;
 
@@ -20,11 +22,17 @@ namespace DbMigration.GUI
                 .CreateDefaultBuilder()
                 .ConfigureAppConfiguration(SetupConfiguration)
                 .ConfigureServices(ConfigureServices)
+                .ConfigureLogging(ConfigureLogging)
                 .Build();
         }
 
         protected async override void OnStartup(StartupEventArgs e)
         {
+            _host
+                .Services
+                .GetRequiredService<ILogger<App>>()
+                .LogInformation("Starting Application################################################");
+
             await _host.StartAsync();
 
             _host.Services
@@ -48,6 +56,14 @@ namespace DbMigration.GUI
                 .AddSingleton<ApplyMigrationCmd>()
                 .AddApplicationLayer(builderCtx.Configuration)
                 .AddInfrastructureLayer(builderCtx.Configuration);
+        }
+
+        private void ConfigureLogging(ILoggingBuilder loggingBuilder)
+        {
+            loggingBuilder
+                .SetMinimumLevel(LogLevel.Information)
+                .AddNLog()
+                .AddFilter("Microsoft.EntityFrameworkCore.*", LogLevel.Warning);
         }
     }
 }

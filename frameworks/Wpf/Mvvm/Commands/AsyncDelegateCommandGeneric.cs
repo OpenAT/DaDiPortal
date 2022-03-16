@@ -33,11 +33,19 @@ namespace Wpf.Mvvm.Commands
 
         public async override sealed void Execute(object parameter)
         {
+            _logger.LogInformation($"Executing command {GetType().Name}");
+
             if (_isRunning)
+            {
+                _logger.LogWarning($"Cannot execute command {GetType().Name} because it is already running");
                 return;
+            }
 
             if (!CanExecute(parameter))
+            {
+                _logger.LogWarning($"Cannot execute command {GetType().Name} because CanExecute returned false");
                 return;
+            }
 
 
             _isRunning = true;
@@ -58,6 +66,7 @@ namespace Wpf.Mvvm.Commands
                 Mouse.OverrideCursor = null;
                 _isRunning = false;
                 ExecutionCompleted?.Invoke();
+                _logger.LogInformation($"Execution of command {GetType().Name} completed");
             }
         }
 
