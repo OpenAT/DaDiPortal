@@ -28,24 +28,24 @@ public class ApplyMigrationCmd : AsyncDelegateCommand<ContextVm>
         if (contextVm.LatestAppliedMigration.IsEmpty())
             return true;
 
-        string dateStrOfLatestAvailable = contextVm
-            .Data
-            .LatestMigration
+        var latestAvailable = GetDateTimeFromMigrationName(contextVm.Data.LatestMigration);
+        var latestApplied = GetDateTimeFromMigrationName(contextVm.LatestAppliedMigration!);
+
+        return 
+            latestAvailable != null &&
+            latestApplied != null &&
+            latestApplied < latestAvailable;
+    }
+
+    private DateTime? GetDateTimeFromMigrationName(string migrationName)
+    {
+        string dateString = migrationName
             .Split('_')
             .First();
 
-        string dateStrOfLatestApplied = contextVm
-            .LatestAppliedMigration!
-            .Split('_')
-            .First();
-
-        if (!DateTime.TryParseExact(dateStrOfLatestAvailable, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeLatest))
-            return false;
-
-        if (!DateTime.TryParseExact(dateStrOfLatestApplied, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeLatestApplied))
-            return false;
-
-        return dateTimeLatest > dateTimeLatestApplied;
+        return DateTime.TryParseExact(dateString, "yyyyMMddHHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime)
+            ? dateTime
+            : null;
     }
 
     protected override async Task ExecuteCore(ContextVm contextVm)
@@ -66,5 +66,11 @@ public class ApplyMigrationCmd : AsyncDelegateCommand<ContextVm>
             MessageBox.Show("Migration successfully applied", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         else if (result == ApplyMigrationResult.UpToDate)
             MessageBox.Show("Database already up to date", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        else if (result == ApplyMigrationResult.DataSeedToConfigStoreFailed)
+            MessageBox.Show($"Unable to seed data for IdentityServer Confiugration Store", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        else if (result == ApplyMigrationResult.DataSeedToUserStoreFailed)
+            MessageBox.Show($"Unable to seed data for Aso user store", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+        contextVm.LatestAppliedMigration = await _contextService.GetLatestAppliedMigration(contextVm.Data);
     }
 }

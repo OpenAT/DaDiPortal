@@ -4,6 +4,7 @@ using DbMigrationTool.Application.Infrastructure;
 using DbMigrationTool.Application.Services;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +19,16 @@ public static class ConfigurationExtensions
             .AddScoped<IDatabaseExplorer, DatabaseExplorer>()
             .AddScoped<IMigrationsExplorer, MigrationsExplorer>()
             .AddScoped<IMigrationApplier, MigrationApplier>()
+            .AddScoped<IDataSeeder, DataSeeder>()
             .AddSingleton<OperationalStoreOptions>(new OperationalStoreOptions() { DefaultSchema = DbConstants.SchemaIdentityServer })
             .AddSingleton<ConfigurationStoreOptions>(new ConfigurationStoreOptions() { DefaultSchema = DbConstants.SchemaIdentityServer })
             .AddDbContext<PersistedGrantDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient)
             .AddDbContext<ConfigurationDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient)
             .AddDbContext<AspNetIdentityDbContext>(ConfigureDbContext, ServiceLifetime.Transient, ServiceLifetime.Transient);
+
+        services
+            .AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<AspNetIdentityDbContext>();
 
         return services;
     }
@@ -59,7 +65,7 @@ public static class ConfigurationExtensions
             throw new Exception();
 
         dbContextOptionsBuilder.UseSqlServer(
-            connStrProvider.GetConnectionString(), 
+            connStrProvider.GetConnectionString(),
             b => b.MigrationsAssembly(identityServerAssemblyName).MigrationsHistoryTable(historyTableName, historyTableSchema));
     }
 }

@@ -3,5 +3,8 @@
 public enum ApplyMigrationResult
 {
     Success,
-    UpToDate
+    UpToDate,
+    MigrationError,
+    DataSeedToConfigStoreFailed,
+    DataSeedToUserStoreFailed
 }
