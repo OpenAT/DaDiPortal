@@ -97,8 +97,7 @@ public class DataSeeder : IDataSeeder
             .AddClaimsAsync(user, new Claim[]
             {
                 new Claim(JwtClaimTypes.Name, "Christian Spath"),
-                new Claim(JwtClaimTypes.GivenName, "Christian"),
-                new Claim(JwtClaimTypes.FamilyName, "Spath"),
+                new Claim("PersonMapping", "711616_101")
             });
 
         if (!result.Succeeded)
