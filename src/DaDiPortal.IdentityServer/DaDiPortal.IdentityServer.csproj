@@ -23,4 +23,14 @@
 	<ItemGroup>
 		<Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />	
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>DbMigrationTool.Infrastructure</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using DaDiPortal.IdentityServer.Data;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
@@ -15,20 +16,11 @@ public static class Program
             .Setup()
             .LoadConfigurationFromAppSettings();
 
-        try
-        {
-            bool seed = args.Contains("/seed");
-            if (seed)
-                args = args
-                    .Except(new[] { "/seed" })
-                    .ToArray();
-
+        try 
+        { 
             var webAppBuilder = WebApplication
                 .CreateBuilder(args)
                 .ConfigureServices();
-
-            if (seed)
-                SeedData.EnsureSeedData(webAppBuilder.Configuration.GetConnectionString("DefaultConnection"));
 
             var webApp = webAppBuilder.Build();
 
@@ -49,27 +41,29 @@ public static class Program
 
     private static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
     {
-        var assemblyName = typeof(Program)
-            .Assembly
-            .GetName()
-            .Name;
-
-        string connStr = builder
-            .Configuration
-            .GetConnectionString("DefaultConnection");
+        //APPLY INITIAL MIGRATIONS WITH FOLLOWING COMMANDS
+        //dotnet ef migrations add Operational_Initial --context PersistedGrantDbContext --output-dir Migrations/OperationalStore
+        //dotnet ef migrations add Configuration_Initial --context ConfigurationDbContext --output-dir Migrations/ConfigurationStore
+        //dotnet ef migrations add AspIdentity_Initial --context AspNetIdentityDbContext --output-dir Migrations/AspIdentityStore
 
         builder.Services
-            .AddDbContext<AspNetIdentityDbContext>(o => o.UseSqlServer(connStr, b => b.MigrationsAssembly(assemblyName)));
-
-        builder.Services
+            .AddDbContext<AspNetIdentityDbContext>(o => o.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableAspNetIdentity, DbConstants.SchemaAspNetIdentity))
             .AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<AspNetIdentityDbContext>();
 
         builder.Services
             .AddIdentityServer()
             .AddAspNetIdentity<IdentityUser>()
-            .AddConfigurationStore(opt => opt.ConfigureDbContext = b => b.UseSqlServer(connStr, b1 => b1.MigrationsAssembly(assemblyName)))
-            .AddOperationalStore(opt => opt.ConfigureDbContext = b => b.UseSqlServer(connStr, b1 => b1.MigrationsAssembly(assemblyName)))
+            .AddConfigurationStore(opt =>
+            {
+                opt.DefaultSchema = DbConstants.SchemaIdentityServer;
+                opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableConfigurationStore, DbConstants.SchemaIdentityServer);
+            })
+            .AddOperationalStore(opt =>
+            {
+                opt.DefaultSchema = DbConstants.SchemaIdentityServer;
+                opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableOperationalStore, DbConstants.SchemaIdentityServer);
+            })
             .AddDeveloperSigningCredential();
 
         builder.Services
@@ -82,6 +76,23 @@ public static class Program
         builder.Host.UseNLog();
 
         return builder;
+    }
+
+    private static DbContextOptionsBuilder ConfigureDbCtxOptions(this DbContextOptionsBuilder optBuilder, IConfiguration config, string historyTableName, string historyTableSchema)
+    {
+        var assemblyName = typeof(Program)
+                    .Assembly
+                    .GetName()
+                    .Name;
+        
+        string connStr = config
+            .GetConnectionString("DefaultConnection");
+
+        optBuilder.UseSqlServer(connStr, sqlOptBuilder => sqlOptBuilder
+            .MigrationsAssembly(assemblyName)
+            .MigrationsHistoryTable(historyTableName, historyTableSchema));
+
+        return optBuilder;
     }
 
     private static WebApplication ConfigureWebApp(this WebApplication webApp)
