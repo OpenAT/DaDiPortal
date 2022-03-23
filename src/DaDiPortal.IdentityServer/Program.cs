@@ -56,12 +56,12 @@ public static class Program
             .AddAspNetIdentity<IdentityUser>()
             .AddConfigurationStore(opt =>
             {
-                opt.DefaultSchema = "IdentityServer";
+                opt.DefaultSchema = DbConstants.SchemaIdentityServer;
                 opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableConfigurationStore, DbConstants.SchemaIdentityServer);
             })
             .AddOperationalStore(opt =>
             {
-                opt.DefaultSchema = "IdentityServer";
+                opt.DefaultSchema = DbConstants.SchemaIdentityServer;
                 opt.ConfigureDbContext = b => b.ConfigureDbCtxOptions(builder.Configuration, DbConstants.HistoryTableOperationalStore, DbConstants.SchemaIdentityServer);
             })
             .AddDeveloperSigningCredential();
